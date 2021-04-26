@@ -18,7 +18,7 @@ import org.d3if4027.hitungbmi.db.BmiDb
 import org.d3if4027.hitungbmi.ui.HitungFragmentDirections
 
 class HitungFragment : Fragment() {
-    private val viewModel : HitungViewModel by lazy {
+    private val viewModel: HitungViewModel by lazy {
         val db = BmiDb.getInstance(requireContext())
         val factory = HitungViewModelFactory(db.dao)
         ViewModelProvider(this, factory).get(HitungViewModel::class.java)
@@ -31,26 +31,29 @@ class HitungFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-       when(item.itemId) {
-           R.id.menu_histori -> {
-               findNavController().navigate(R.id.action_hitungFragment_to_historiFragment)
-               return true
-           }
-           R.id.menu_about -> {
-               findNavController().navigate(R.id.action_hitungFragment_to_aboutFragment)
-               return true
-           }
-       }
+        when (item.itemId) {
+            R.id.menu_histori -> {
+                findNavController().navigate(R.id.action_hitungFragment_to_historiFragment)
+                return true
+            }
+            R.id.menu_about -> {
+                findNavController().navigate(R.id.action_hitungFragment_to_aboutFragment)
+                return true
+            }
+        }
         return super.onOptionsItemSelected(item)
     }
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         binding = FragmentHitungBinding.inflate(
-            layoutInflater, container, false)
+            layoutInflater, container, false
+        )
         binding.button.setOnClickListener { hitungBmi() }
-        binding.saranButton.setOnClickListener {viewModel.mulaiNavigasi() }
+        binding.saranButton.setOnClickListener { viewModel.mulaiNavigasi() }
         binding.shareButton.setOnClickListener { shareData() }
         setHasOptionsMenu(true)
         return binding.root
@@ -61,22 +64,21 @@ class HitungFragment : Fragment() {
 
         viewModel.getNavigasi().observe(viewLifecycleOwner, {
             if (it == null) return@observe
-            findNavController().navigate(HitungFragmentDirections
-                .actionHitungFragmentToSaranFragment(it))
+            findNavController().navigate(
+                HitungFragmentDirections
+                    .actionHitungFragmentToSaranFragment(it)
+            )
             viewModel.selesaiNavigasi()
         })
 
         viewModel.getHasilBmi().observe(viewLifecycleOwner, {
             if (it == null) return@observe
             binding.bmiTextView.text = getString(R.string.bmi_x, it.bmi)
-            binding.kategoriTextView.text = getString(R.string.kategori_x,
-                    getKategori(it.kategor))
+            binding.kategoriTextView.text = getString(
+                R.string.kategori_x,
+                getKategori(it.kategor)
+            )
             binding.buttonGroup.visibility = View.VISIBLE
-        })
-
-        viewModel.data.observe(viewLifecycleOwner, {
-            if (it == null) return@observe
-            Log.d("HitungFragment", "Data tersimpan. ID = ${it.id}")
         })
     }
 
@@ -102,6 +104,7 @@ class HitungFragment : Fragment() {
 
         viewModel.hitungBmi(berat, tinggi, isMale)
     }
+
     private fun getKategori(kategoriBmi: KategoriBmi): String {
 
         val stringRes = when (kategoriBmi) {
@@ -118,7 +121,8 @@ class HitungFragment : Fragment() {
             getString(R.string.pria)
         else
             getString(R.string.wanita)
-        val message = getString(R.string.bagikan_template,
+        val message = getString(
+            R.string.bagikan_template,
             binding.beratEditText.text,
             binding.tinggiEditText.text,
             gender,
@@ -128,7 +132,9 @@ class HitungFragment : Fragment() {
         val shareIntent = Intent(Intent.ACTION_SEND)
         shareIntent.setType("text/plain").putExtra(Intent.EXTRA_TEXT, message)
         if (shareIntent.resolveActivity(
-                requireActivity().packageManager) != null) {
+                requireActivity().packageManager
+            ) != null
+        ) {
             startActivity(shareIntent)
         }
     }
